@@ -11,7 +11,7 @@ FILE_CATEGORIES = {
     }
 
 # Where the unorganized files will go
-SOURCE_DIRECTORY = "C:/Users/YourName/Downloads"
+SOURCE_DIRECTORY = "C:/Users/justa/Desktop/TestDownloads"
 
 # Where the organized files will go
-DESTINATION_DIRECTORY = "C:/Users/YourName/OrganizedFiles"
+DESTINATION_DIRECTORY = "C:/Users/justa/Desktop/TestOrganized"

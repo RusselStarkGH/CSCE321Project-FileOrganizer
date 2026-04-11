@@ -12,7 +12,7 @@ class FileOrganizer:
         self.dest = Path(dest_dir)
         self._reverse_map = self._build_reverse_map()
 
-    # This organizes the files by moving them to the category folders in the dest_dir
+    # Inverts config dict for faster lookups (extension category)
     def _build_reverse_map(self):
         extension_map = {}
         for category, extensions in FILE_CATEGORIES.items():
@@ -20,4 +20,38 @@ class FileOrganizer:
                 extension_map[ext.lower()] = category
                 return extension_map
 
-# Still unfinished, I need to implement more funtions for this class to properly work.
+    # This gets the category of a file, returns 'Other' if unknown
+    def get_category(self, file_extension):
+        return self._reverse_map.get(file_extension.lower(), "Others")
+
+    # This goes through the source directory to move files
+    def organize(self):
+        if not self.source.exists():
+            logger.error(f"Sourcedirectory {self.source} does not exist.")
+            return
+
+        self.dest.mkdir(parents=True, exist_ok=True)
+
+        moved_count = 0
+
+        for file_path in self.source.iterdir():
+            if file_path.is_file():
+                category = self.get_category(file_path.suffix)
+                target_folder = self.dest / category
+
+                target_folder.mkdir(exist_ok=True)
+
+                target_path = target_folder / file_path.name
+
+                try:
+                    if not target_path.exists():
+                        shutil.move(str(file_path), str(target_path))
+                        logger.info(f"Moved: {file_path.name} -> {category}")
+                        moved_count += 1
+                    else:
+                        logger.warning(f"Skipped (Already Exists): {file_path.name}")
+                except Exception as e:
+                    logger.error(f"Error moving {file_path.name}: {e}")
+
+            logger.info(f"Organization complete. Moved {moved_count} files.")
+            print(f"Done, successfully moved {moved_count} files.")
