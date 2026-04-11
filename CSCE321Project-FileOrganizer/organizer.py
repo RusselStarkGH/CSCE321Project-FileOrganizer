@@ -3,7 +3,7 @@
 import shutil
 from pathlib import Path
 from config import FILE_CATEGORIES
-from core.logger import logger
+from logger import logger
 
 # This organizes files from the source_dir (dir = directory) to the dest_dir based on their extensions
 class FileOrganizer:
