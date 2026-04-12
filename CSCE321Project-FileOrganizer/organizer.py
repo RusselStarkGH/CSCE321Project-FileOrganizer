@@ -2,17 +2,19 @@
 
 import shutil
 from pathlib import Path
-from config import FILE_CATEGORIES
+from config import FILE_CATEGORIES, IGNORED_FILES, IGNORED_EXTENSIONS
 from logger import logger
 
 # This organizes files from the source_dir (dir = directory) to the dest_dir based on their extensions
 class FileOrganizer:
-    def __init__(self, source_dir, dest_dir, recursive=False):
+    def __init__(self, source_dir, dest_dir, recursive=False, operation="copy"):
         self.source = Path(source_dir)
         self.dest = Path(dest_dir)
         self.recursive = recursive  # Whether to check subdirectories
+        self.operation = operation  # Whether to copy or move
+        self.operation_text = "copied" if self.operation == "copy" else "moved"
         self._reverse_map = self._build_reverse_map()
-
+    
     # Inverts config dict for faster lookups (extension category)
     def _build_reverse_map(self):
         extension_map = {}
@@ -35,14 +37,18 @@ class FileOrganizer:
 
         try:
             if not target_path.exists():
-                shutil.move(str(file_path), str(target_path))
-                logger.info(f"Moved: {file_path.name} -> {category}")
+                if (self.operation == "copy"):
+                    shutil.copy2(str(file_path), str(target_path))
+                else:
+                    shutil.move(str(file_path), str(target_path))
+
+                logger.info(f"{self.operation_text.capitalize()}: {file_path.name} -> {category}")
                 return True
             else:
                 logger.warning(f"Skipped (Already Exists): {file_path.name}")
                 return False
         except Exception as e:
-            logger.error(f"Error moving {file_path.name}: {e}")
+            logger.error(f"Error moving/copying {file_path.name}: {e}")
             return False
 
     # This goes through the source directory to move files
@@ -60,10 +66,15 @@ class FileOrganizer:
                 continue
             if file_path.resolve().is_relative_to(self.dest.resolve()):     # Don't move if already there
                 continue
+            if file_path.name.lower() in IGNORED_FILES:
+                continue
+            if file_path.suffix.lstrip(".").lower() in IGNORED_EXTENSIONS:
+                continue
+            if file_path.name.startswith("~$"):
+                continue
 
             if self._move_file(file_path):
                 moved_count += 1
             
-
-        logger.info(f"Organization complete. Moved {moved_count} files.")
-        print(f"Done, successfully moved {moved_count} files.")
+        logger.info(f"Organization complete. {self.operation_text.capitalize()} {moved_count} files.")
+        print(f"Done, successfully {self.operation_text} {moved_count} files.")

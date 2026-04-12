@@ -33,23 +33,33 @@ def build_gui():
     checkbox = tk.Checkbutton(root, text="Include subdirectories", variable=recursive_var)
     checkbox.grid(row=4, column=0, sticky="w", padx=10, pady=(10, 2))
 
+    operation_var = tk.StringVar(value="copy")  # default to copy
+    tk.Radiobutton(root, text="Copy", variable=operation_var, value="copy").grid(row=4, column=1, sticky="w", padx=10)
+    tk.Radiobutton(root, text="Move", variable=operation_var, value="move").grid(row=5, column=1, sticky="w", padx=10)
+
+
     # Organizes files from source dir into destination dir
     def organize_files(source_dir, destination_dir):
-        organizer = FileOrganizer(source_dir, destination_dir, recursive_var)
+        organizer = FileOrganizer(source_dir, destination_dir, recursive_var.get(), operation_var.get())
         organizer.organize()
-        messagebox.showinfo("Organizer", f"Done, successfully moved files from:\n{source_dir}\nto\n{destination_dir}")
+        operation_text = "copied" if operation_var.get() == "copy" else "moved"
+        messagebox.showinfo("Organizer", f"Done, successfully {operation_text} files from:\n{source_dir}\nto\n{destination_dir}")
 
     # Validates the source/destination paths
     def on_start():
         source_dir = source_entry.get().strip() or SOURCE_DIRECTORY
         destination_dir = destination_entry.get().strip() or DESTINATION_DIRECTORY
 
-        if not Path(source_dir).is_dir():
+        if source_dir == destination_dir:
+            messagebox.showerror("Error", f"Source directory is the same as the destination directory. Provide another destination path.\n")
+            return
+
+        if not Path(source_dir).exists():
             messagebox.showerror("Error", f"Source directory does not exist:\n{source_dir}")
             return
         
         # Asks to create a folder if the destination doesn't exists
-        if not Path(destination_dir).exists():
+        if not Path(destination_dir).is_dir():
             create = messagebox.askyesno("Create folder?", f"Destination does not exist:\n{destination_dir}\nCreate it?")
             if create:
                 Path(destination_dir).mkdir(parents=True, exist_ok=True)
@@ -59,7 +69,7 @@ def build_gui():
         organize_files(source_dir, destination_dir)
 
     start_button = tk.Button(root, text="Start Organizing", width=20, command=on_start)
-    start_button.grid(row=5, column=0, columnspan=3, pady=15)
+    start_button.grid(row=6, column=0, columnspan=3, pady=15)
 
     root.update_idletasks()
     x = (root.winfo_screenwidth() - root.winfo_width()) // 2
