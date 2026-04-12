@@ -18,7 +18,7 @@ class FileOrganizer:
         for category, extensions in FILE_CATEGORIES.items():
             for ext in extensions:
                 extension_map[ext.lower()] = category
-                return extension_map
+        return extension_map
 
     # This gets the category of a file, returns 'Other' if unknown
     def get_category(self, file_extension):
@@ -53,5 +53,5 @@ class FileOrganizer:
                 except Exception as e:
                     logger.error(f"Error moving {file_path.name}: {e}")
 
-            logger.info(f"Organization complete. Moved {moved_count} files.")
-            print(f"Done, successfully moved {moved_count} files.")
+        logger.info(f"Organization complete. Moved {moved_count} files.")
+        print(f"Done, successfully moved {moved_count} files.")
