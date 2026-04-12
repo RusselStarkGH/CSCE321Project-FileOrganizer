@@ -11,12 +11,6 @@ def browse_folder(entry_widget, default_path):
         entry_widget.delete(0, tk.END)
         entry_widget.insert(0, path)
 
-# Organizes files from source dir into destination dir
-def organize_files(source_dir, destination_dir):
-    organizer = FileOrganizer(source_dir, destination_dir)
-    organizer.organize()
-    messagebox.showinfo("Organizer", f"Done, successfully moved files from:\n{source_dir}\nto\n{destination_dir}")
-
 # Builds the main gui window
 def build_gui():
     root = tk.Tk()
@@ -34,6 +28,16 @@ def build_gui():
     destination_entry.grid(row=3, column=0, columnspan=2, padx=10)
     destination_entry.insert(0, DESTINATION_DIRECTORY)
     tk.Button(root, text="Browse...", command=lambda: browse_folder(destination_entry, DESTINATION_DIRECTORY)).grid(row=3, column=2, padx=10)
+
+    recursive_var = tk.BooleanVar()
+    checkbox = tk.Checkbutton(root, text="Include subdirectories", variable=recursive_var)
+    checkbox.grid(row=4, column=0, sticky="w", padx=10, pady=(10, 2))
+
+    # Organizes files from source dir into destination dir
+    def organize_files(source_dir, destination_dir):
+        organizer = FileOrganizer(source_dir, destination_dir, recursive_var)
+        organizer.organize()
+        messagebox.showinfo("Organizer", f"Done, successfully moved files from:\n{source_dir}\nto\n{destination_dir}")
 
     # Validates the source/destination paths
     def on_start():
@@ -55,7 +59,7 @@ def build_gui():
         organize_files(source_dir, destination_dir)
 
     start_button = tk.Button(root, text="Start Organizing", width=20, command=on_start)
-    start_button.grid(row=4, column=0, columnspan=3, pady=15)
+    start_button.grid(row=5, column=0, columnspan=3, pady=15)
 
     root.update_idletasks()
     x = (root.winfo_screenwidth() - root.winfo_width()) // 2

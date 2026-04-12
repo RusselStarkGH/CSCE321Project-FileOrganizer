@@ -2,16 +2,16 @@
 
 # File categories and their extensions
 FILE_CATEGORIES = {
-    "Documents": ["pdf", "docx", "txt", "xlsx", "pptx", ".csv"],
-    "Images": ["jpg", "jpeg", "png", "gif", ".svg", "bmp"],
-    "Media": [".mp4", ".mp3", ".avi", ".mkv", ".mov"],
-    "Archives": [".zip", ".rar", ".tar", ".gz"],
-    "Executables": [".exe", ".msi", ".dmg", ".sh:"],
-    "Code": [".py", ".java", ".cpp", ".js", ".html", ".css"]
+    "Documents": ["pdf", "docx", "txt", "xlsx", "pptx", "csv"],
+    "Images": ["jpg", "jpeg", "png", "gif", "svg", "bmp"],
+    "Media": ["mp4", "mp3", "avi", "mkv", "mov"],
+    "Archives": ["zip", "rar", "tar", "gz"],
+    "Executables": ["exe", "msi", "dmg", "sh:"],
+    "Code": ["py", "java", "cpp", "js", "html", "css"]
     }
 
 # Where the unorganized files will go
-SOURCE_DIRECTORY = "C:/Users/justa/Desktop/TestDownloads"
+SOURCE_DIRECTORY = "C:/Users/username/Desktop/TestDownloads"
 
 # Where the organized files will go
-DESTINATION_DIRECTORY = "C:/Users/justa/Desktop/TestOrganized"
+DESTINATION_DIRECTORY = "C:/Users/username/Desktop/TestOrganized"
