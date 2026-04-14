@@ -24,13 +24,13 @@ class FileOrganizer:
         return extension_map
 
     # This gets the category of a file, returns 'Other' if unknown
-    def get_category(self, file_extension):
+    def _get_category(self, file_extension):
         ext = file_extension.lstrip('.').lower()    # Remove the leading dot to stay consistent (no dots in the config)
         return self._reverse_map.get(ext, "Others")
 
     # Moves a file to the target folder
     def _move_file(self, file_path):
-        category = self.get_category(file_path.suffix)
+        category = self._get_category(file_path.suffix)
         target_folder = self.dest / category
         target_folder.mkdir(exist_ok=True)
         target_path = target_folder / file_path.name
@@ -51,7 +51,14 @@ class FileOrganizer:
             logger.error(f"Error moving/copying {file_path.name}: {e}")
             return False
 
-    # This goes through the source directory to move files
+    # Converts bytes to more readable units
+    def _format_size(self, bytes):
+        for unit in ["B", "KB", "MB", "GB", "TB"]:
+            if bytes < 1024:
+                return f"{bytes:.2f} {unit}"
+            bytes /= 1024
+
+    # This goes through the source directory to move/copy files and return the size of all the files moved/copied
     def organize(self):
         if not self.source.exists():
             logger.error(f"Sourcedirectory {self.source} does not exist.")
@@ -59,6 +66,7 @@ class FileOrganizer:
 
         self.dest.mkdir(parents=True, exist_ok=True)
         moved_count = 0
+        total_file_size = 0
         files = self.source.rglob("*") if self.recursive else self.source.iterdir()
 
         for file_path in files:
@@ -73,8 +81,11 @@ class FileOrganizer:
             if file_path.name.startswith("~$"):
                 continue
 
+            total_file_size += Path(file_path).stat().st_size
             if self._move_file(file_path):
                 moved_count += 1
             
         logger.info(f"Organization complete. {self.operation_text.capitalize()} {moved_count} files.")
         print(f"Done, successfully {self.operation_text} {moved_count} files.")
+
+        return self._format_size(total_file_size)

@@ -43,10 +43,10 @@ def build_gui():
     def organize_files(source_dir, destination_dir):
         start = time.perf_counter()
         organizer = FileOrganizer(source_dir, destination_dir, recursive_var.get(), operation_var.get())
-        organizer.organize()
+        total_file_size = organizer.organize()
         operation_text = "copied" if operation_var.get() == "copy" else "moved"
         elapsed = time.perf_counter() - start
-        messagebox.showinfo("Organizer", f"Done, successfully {operation_text} files from:\n{source_dir}\nto\n{destination_dir}\nin {elapsed:.4f} seconds")
+        messagebox.showinfo("Organizer", f"Done, successfully {operation_text} files from:\n{source_dir}\nto\n{destination_dir}.\nFile size: {total_file_size}.\nTook {elapsed:.4f} seconds.")
 
     # Validates the source/destination paths
     def on_start():
