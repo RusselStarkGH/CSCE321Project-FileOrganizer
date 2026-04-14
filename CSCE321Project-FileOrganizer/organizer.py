@@ -58,7 +58,8 @@ class FileOrganizer:
                 return f"{bytes:.2f} {unit}"
             bytes /= 1024
 
-    # This goes through the source directory to move/copy files and return the size of all the files moved/copied
+    # This goes through the source directory to move/copy files
+    # and returns the amount and the total size of all the files moved/copied
     def organize(self):
         if not self.source.exists():
             logger.error(f"Sourcedirectory {self.source} does not exist.")
@@ -81,11 +82,12 @@ class FileOrganizer:
             if file_path.name.startswith("~$"):
                 continue
 
-            total_file_size += Path(file_path).stat().st_size
+            
             if self._move_file(file_path):
+                total_file_size += Path(file_path).stat().st_size
                 moved_count += 1
             
         logger.info(f"Organization complete. {self.operation_text.capitalize()} {moved_count} files.")
         print(f"Done, successfully {self.operation_text} {moved_count} files.")
 
-        return self._format_size(total_file_size)
+        return [moved_count, self._format_size(total_file_size)]

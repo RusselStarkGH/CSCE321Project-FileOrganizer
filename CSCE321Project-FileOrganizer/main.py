@@ -15,8 +15,30 @@ def browse_folder(entry_widget, default_path):
 # Builds the main gui window
 def build_gui():
     root = tk.Tk()
+    root.withdraw()  # hide until positioned
     root.title("File Organizer")
     root.resizable(False, False)
+
+
+    def show_custom_message(title, message, max_width=400, pad_x=20):
+        window = tk.Toplevel()
+        window.title(title)
+        window.resizable(False, False)
+        window.grab_set()
+
+        wraplength = max_width - (pad_x * 2)
+
+        tk.Label(window, text=message, justify="left", wraplength=wraplength).pack(anchor="w", padx=20, pady=(15,5))
+        tk.Button(window, text="OK", command=window.destroy, padx=25).pack(pady=(0, 15))
+
+        window.update_idletasks()
+        width = min(window.winfo_reqwidth(), max_width)
+        height = window.winfo_reqheight()
+        x = (window.winfo_screenwidth() - width) // 2
+        y = (window.winfo_screenheight() - height) // 2
+        window.geometry(f"+{x}+{y}")
+
+        window.wait_window()
 
     tk.Label(root, text="Source directory:").grid(row=0, column=0, sticky="w", padx=10, pady=(10, 2))
     source_entry = tk.Entry(root, width=70)
@@ -43,10 +65,10 @@ def build_gui():
     def organize_files(source_dir, destination_dir):
         start = time.perf_counter()
         organizer = FileOrganizer(source_dir, destination_dir, recursive_var.get(), operation_var.get())
-        total_file_size = organizer.organize()
+        moved_count, total_file_size = organizer.organize()
         operation_text = "copied" if operation_var.get() == "copy" else "moved"
         elapsed = time.perf_counter() - start
-        messagebox.showinfo("Organizer", f"Done, successfully {operation_text} files from:\n{source_dir}\nto\n{destination_dir}.\nFile size: {total_file_size}.\nTook {elapsed:.4f} seconds.")
+        show_custom_message("Organizer", f"Done, successfully {operation_text} {moved_count} files\nfrom: {source_dir}\nto: {destination_dir}\nFile size: {total_file_size}\nTime: {elapsed:.4f} seconds")
 
     # Validates the source/destination paths
     def on_start():
@@ -79,9 +101,8 @@ def build_gui():
     x = (root.winfo_screenwidth() - root.winfo_width()) // 2
     y = (root.winfo_screenheight() - root.winfo_height()) // 2
     root.geometry(f"+{x}+{y}")
-
+    root.deiconify()  # show after positioned
     root.mainloop()
-
 
 def main():
     build_gui()
