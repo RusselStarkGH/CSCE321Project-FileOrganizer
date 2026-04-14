@@ -24,7 +24,9 @@ IGNORED_FILES = {
 }
 
 # Where the unorganized files will go
-SOURCE_DIRECTORY = "C:/Users/username/Desktop/TestDownloads"
+# SOURCE_DIRECTORY = "C:/Users/username/Desktop/TestDownloads"
+SOURCE_DIRECTORY = "C:/Users/Maksym/Pictures/Screenshots"
 
 # Where the organized files will go
-DESTINATION_DIRECTORY = "C:/Users/username/Desktop/TestOrganized"
+# DESTINATION_DIRECTORY = "C:/Users/username/Desktop/TestOrganized"
+DESTINATION_DIRECTORY = "C:/Users/Maksym/Desktop"

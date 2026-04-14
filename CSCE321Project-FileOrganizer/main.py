@@ -3,6 +3,7 @@ from tkinter import filedialog, messagebox
 from pathlib import Path
 from config import SOURCE_DIRECTORY, DESTINATION_DIRECTORY
 from organizer import FileOrganizer
+import time
 
 # Opens a folder picker
 def browse_folder(entry_widget, default_path):
@@ -40,10 +41,12 @@ def build_gui():
 
     # Organizes files from source dir into destination dir
     def organize_files(source_dir, destination_dir):
+        start = time.perf_counter()
         organizer = FileOrganizer(source_dir, destination_dir, recursive_var.get(), operation_var.get())
         organizer.organize()
         operation_text = "copied" if operation_var.get() == "copy" else "moved"
-        messagebox.showinfo("Organizer", f"Done, successfully {operation_text} files from:\n{source_dir}\nto\n{destination_dir}")
+        elapsed = time.perf_counter() - start
+        messagebox.showinfo("Organizer", f"Done, successfully {operation_text} files from:\n{source_dir}\nto\n{destination_dir}\nin {elapsed:.4f} seconds")
 
     # Validates the source/destination paths
     def on_start():
@@ -65,8 +68,9 @@ def build_gui():
                 Path(destination_dir).mkdir(parents=True, exist_ok=True)
             else:
                 return
-
+            
         organize_files(source_dir, destination_dir)
+
 
     start_button = tk.Button(root, text="Start Organizing", width=20, command=on_start)
     start_button.grid(row=6, column=0, columnspan=3, pady=15)
