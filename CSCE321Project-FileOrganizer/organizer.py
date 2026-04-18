@@ -82,9 +82,10 @@ class FileOrganizer:
             if file_path.name.startswith("~$"):
                 continue
 
-            
+            current_file_size = Path(file_path).stat().st_size
+
             if self._move_file(file_path):
-                total_file_size += Path(file_path).stat().st_size
+                total_file_size += current_file_size
                 moved_count += 1
             
         logger.info(f"Organization complete. {self.operation_text.capitalize()} {moved_count} files.")
